@@ -1,0 +1,27 @@
+#!/bin/bash
+#SBATCH --mem=64G
+#SBATCH --job-name=RNA2CMmousealign
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=jmpvales1@sheffield.ac.uk
+#SBATCH --output=hybrid_test_%j.log
+
+ 
+# load module needed
+module load STAR/2.7.10b-GCC-11.3.0
+
+# open the appropriate subdirectory
+cd /mnt/parscratch/users/bip23jmv/RNA2CM/data/SRR3090631
+
+# define variables
+$ SAMPLE=SRR3090631 
+$ THREADS=64
+$ STAR_HUMAN_INDEX=/mnt/parscratch/users/bip23jmv/RNA2CM/data/GRCh38 
+$ STAR_MOUSE_INDEX=/mnt/parscratch/users/bip23jmv/RNA2CM/data/GRCm38 
+$ REFERENCE_GENOME=/mnt/parscratch/users/bip23jmv/RNA2CM/data/GRCh38.primary_assembly.genome.fa 
+$ INTERVALS=/mnt/parscratch/users/bip23jmv/RNA2CM/data/GRCh38_exome.bed.gz 
+$ DBSNP=/mnt/parscratch/users/bip23jmv/RNA2CM/data/dbSNPbuild154Renamed.vcf.gz 
+$ COSMIC_VCF=/mnt/parscratch/users/bip23jmv/RNA2CM/data/CosmicCodingMutsRenamed.vcf.gz 
+$ HEADER=/mnt/parscratch/users/bip23jmv/RNA2CM/data/header.txt
+
+# align the reads to the mouse reference genome to output an aligned-to-mouse genome BAM file.
+$ STAR --runThreadN $THREADS --genomeDir $STAR_MOUSE_INDEX --readFilesIn ${SAMPLE}.trimmed.fastq.gz --outFileNamePrefix ${SAMPLE}GRCm --outSAMtype BAM SortedByCoordinate --readFilesCommand zcat --outSAMattributes NM --twopassMode Basic --outFilterMultimapNmax 1 --outFilterMismatchNoverLmax 0.1
